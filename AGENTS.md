@@ -1,6 +1,6 @@
 # ITOM — Inventor/Investor Platform
 
-A verified platform that connects inventors, investors, and case study authors. Every claim carries proof. Nothing goes live without admin approval. A score decides ranking.
+ITOM is a verified platform that connects inventors, investors, and case study authors. Inventors submit ideas with proof and move them through a 10-step journey (Idea → Fund → Build → ... → Scale). Nothing goes live without admin approval. Every claim carries proof. A score decides ranking. Owner controls field-level visibility (public / members / locked).
 
 ---
 
