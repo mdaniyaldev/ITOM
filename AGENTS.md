@@ -10,7 +10,7 @@ ITOM is a verified platform that connects inventors, investors, and case study a
 |---|---|
 | Framework | Next.js (App Router) + TypeScript |
 | Styling | Tailwind CSS |
-| UI Components | shadcn/ui (Radix primitives + Tailwind) |
+| UI Components | shadcn/ui (Base UI primitives + Tailwind) |
 | Database | Supabase (local Docker for dev, cloud for prod) |
 | Auth | Supabase Auth (email + Google sign-in) |
 | Hosting | Vercel (app) + Cloudflare (DNS later, CDN later) |
