@@ -1,11 +1,11 @@
 # ITOM — Inventor/Investor Platform
 
-ITOM is a verified platform that connects inventors, investors, and case study authors. Inventors submit ideas with proof and move them through a 10-step journey (Idea → Fund → Build → ... → Scale). Nothing goes live without admin approval. Every claim carries proof. A score decides ranking. Owner controls field-level visibility (public / members / locked).
+ITOM is a verified platform connecting inventors, investors, and case study authors. Inventors submit ideas with proof and move through a 10-step journey: Idea → Fund → Build → Prove → Protect → Regulate → Manufacture → Market → Commercialise → Scale. Nothing goes live without admin approval. Every claim carries proof. A score decides ranking. Owner controls field-level visibility (public/members/locked).
 
----
+## Home Page
+Top bar: Logo · Ideas · Inventors · Investors · Case studies · How it works · Sign in · Sign up. Hero band: one line of promise and two buttons – I have an idea – and – I want to invest –. Ten steps: Idea → Fund → Build → Prove → Protect → Regulate → Manufacture → Market → Commercialise → Scale (each step clickable, shows count of ideas). Sections: Top inventors, Ideas on the platform (Top scored & Newly approved tabs), Top investors, Most viewed case studies.
 
 ## Stack
-
 | Layer | Technology |
 |---|---|
 | Framework | Next.js (App Router) + TypeScript |
@@ -15,10 +15,7 @@ ITOM is a verified platform that connects inventors, investors, and case study a
 | Auth | Supabase Auth (email + Google sign-in) |
 | Hosting | Vercel (app) + Cloudflare (DNS later, CDN later) |
 
----
-
 ## Commands
-
 ```bash
 # Development
 npm run dev              # Start dev server (localhost:3000)
@@ -38,8 +35,6 @@ npm run test             # Run test suite
 npm run test:watch       # Watch mode
 ```
 
----
-
 ## Database — 25 Tables in 6 Groups
 
 ### People / Access (5)
@@ -47,6 +42,12 @@ npm run test:watch       # Watch mode
 
 ### Profiles & Content (7)
 `inventor_profiles` · `investor_profiles` · `case_studies` · `ideas` · `idea_steps` · `steps_master` · `master_lists`
+
+### Form Field Details
+- Inventor Profile: Full name/company name (Text), Photo/logo (Image, mandatory), Country/city (Dropdown+text), Field of work (medical device, software, materials, energy, agriculture, other), What you do (Doctor, engineer, student, researcher, business owner, etc.), Where you work/study (Text, optional, Letter–ID card), Qualification (Text, Degree certificate), Team details (optional), Phone (Required, never public), About yourself (600 chars max).
+- Idea: Title + one-line user-friendly description, Problem (who has it & current solution), How it works (plain words, public proof of studies/concepts), Kind (Device–Software–Material–research), Ownership (For all user y/n), Operational warning (For all user y/n, patent cost warning), Proof files (photos–video–test reports–lab results, For all user y/n with patent warning).
+- Investor Profile: Name/org (Text, registration paper/letter/link to official page), Type (Grant body–Angel–Fund–Company–University–Government programme–Crowdfunding platform), Logo/photo (Image–optional), Country/countries invested in (Dropdowns–required), What you give (Grant–Equity–Loan–Licence advance–Prize–In-kind help), What you seek (in your own words), Past investments (Name–year–amount, link/letter/public announcement), Reply speed (Within a week–two weeks–a month), Contact person/phone (Phone never public).
+- Case Study: Title (one line), Subject (Myself–My company–Somebody else–named–A well-known case), Field and country (same lists used elsewhere for filters).
 
 ### Proof & NDA (4)
 `files` · `field_visibility` · `file_access_requests` · `nda_acceptances`
@@ -62,10 +63,7 @@ npm run test:watch       # Watch mode
 
 > **Auth root:** `auth.users` (Supabase) is the root identity. `public.users` extends it with app fields (`name`, `phone`, `country`, `status`).
 
----
-
 ## The 7 Rules (Non-Negotiable)
-
 1. **Admin approves everything.** No profile, idea, case study, or edit goes live without admin review.
 2. **Nothing goes live on its own.** Every new item and every edit defaults to `under_review`.
 3. **Every claim carries proof.** Photo, link, or typed note. No proof = no approval.
@@ -74,10 +72,7 @@ npm run test:watch       # Watch mode
 6. **Profile on/off switch.** User can deactivate anytime; admin is notified.
 7. **Admin authority.** Admin can deactivate or delete any profile with a mandatory reason, emailed to the user.
 
----
-
 ## Architecture Rules
-
 - RLS enabled on every table from the first migration. Never ship a table without policies.
 - Soft delete everywhere. Use `deleted_at TIMESTAMP NULL`. Never hard-delete rows.
 - Business logic lives in `lib/`, not in route handlers or page components.
@@ -89,24 +84,17 @@ npm run test:watch       # Watch mode
 - Scoring is calculated server-side from approved content only. Admin can override with mandatory reason (logged in `score_history` with `source = OVERRIDE`).
 - **Admin lock (Rule 1):** when an admin starts reviewing, set `reviews.locked_by` and `reviews.locked_at`. No other admin can review until unlocked.
 
----
-
 ## Visibility Rules
-
 | Scope | Meaning |
 |---|---|
 | `public` | Anyone, including search engines. |
 | `members` | Approved, signed-in users only. |
 | `locked` | Owner and admin only. Requires `file_access_requests` to unlock. |
-
 - Phone numbers and email addresses are **never** public. Only admin and the owner see them.
 - Proof files can be marked `locked`.
 - First-time public toggle shows the patent/IP warning modal once per user.
 
----
-
 ## Scoring Rules
-
 **Total: 100 points**
 
 | Criterion | Points |
@@ -130,20 +118,16 @@ npm run test:watch       # Watch mode
 
 Owner and admin see exact score + breakdown. Score cannot be bought with money.
 
----
-
 ## Admin Review Workflow
-
 Three buttons only:
-
 - **Approve** → goes live immediately.
 - **Changes Needed** → form reopens at failing field with a clear reason. Original text preserved. Email sent to user.
 - **Reject** → only for fake, stolen, or abusive content. Reason mandatory.
 
----
+## Admin Panel Features
+Team roles management, Audit log viewing, Search functionality, CSV and PDF export, Analytics dashboard.
 
 ## Messaging Rules
-
 - Only approved users with role `status = live` can send or receive.
 - Max 10 new conversations per day per user.
 - Every thread has **Report** and **Block** actions.
@@ -151,64 +135,7 @@ Three buttons only:
 - Thread outcomes: `talking`, `deal`, `no_deal`, `not_saying` (asked after 45 days).
 - Platform does not sit in the middle of deals. Terms, valuations, and money happen off-platform.
 
----
-
-## Conventions
-
-### File Naming
-- `kebab-case.ts` for files
-- `PascalCase.tsx` for React components
-
-### Component Structure
-| Directory | Purpose |
-|---|---|
-| `components/ui/` | Design system |
-| `components/layout/` | Layout components |
-| `components/icons/` | Icon components |
-
-### Server Logic
-`lib/` — one file per domain (e.g. `lib/ideas.ts`, `lib/scoring.ts`)
-
-### Supabase Clients
-| File | Purpose |
-|---|---|
-| `lib/supabase/client.ts` | Browser client |
-| `lib/supabase/server.ts` | Server client |
-| `lib/supabase/middleware.ts` | Auth refresh |
-
-### Types
-Auto-generated into `types/database.ts`. **Never hand-edit.**
-
-### Env Vars
-All secrets via `.env.local`. Never commit. Never read secrets in client components.
-
-### API Routes
-Prefer Server Actions. Use `app/api/` only for webhooks and external callbacks.
-
----
-
-## Design System
-
-- **Brand:** ITOM — dark navy, professional, trustworthy (not startup-y).
-- **Design system source:** Figma file "Design System for Platform".
-- **Art direction reference:** `design.md` (points at CSS token values).
-- Same navbar on all public pages. Same sidebar on all admin pages.
-- Every screen must be complete — brand, real copy, empty states, loading states, error states.
-- **Accessibility:** text must pass WCAG AA against its background in both light and dark modes.
-
----
-
-## Testing
-
-- Functional tests for every user flow (signup, submit idea, admin approve, message).
-- Security tests: locked fields hidden, phone/email never leak, RLS blocks unauthorized reads.
-- Mobile responsiveness on key screens (home, idea detail, forms, inbox).
-- Every new API route and RLS policy gets a test.
-
----
-
 ## Don't Do
-
 - Never bypass admin approval in any code path.
 - Never expose phone or email in a public API response.
 - Never edit a migration after it has been merged.
@@ -220,10 +147,7 @@ Prefer Server Actions. Use `app/api/` only for webhooks and external callbacks.
 - Never write scoring logic in the client.
 - Never invent a decision that has no spec. Route to `/architect` instead.
 
----
-
 ## Project Docs
-
 Durable project state lives in files, not chat:
 
 | Path | Purpose |
@@ -235,22 +159,17 @@ Durable project state lives in files, not chat:
 | `types/database.ts` | Auto-generated schema types |
 | `docs/source/` | Locked source documents |
 
----
-
 ## Workflow Depth
-
 - **Project default:** Beta
 - After `/develop` → `/check verify` → `/test`
 - Higher-risk features (auth, admin, scoring) → also run `/check review`
 
 ## Skills Priority
-
 - Workflow: jsmastery-pro skills (`/scope`, `/architect`, `/develop`, etc.)
 - Database/RLS: supabase + supabase-postgres-best-practices
 - UI components: shadcn/ui skill
 
 ## Original Specs (Source of Truth)
-
 Locked design documents. Do not deviate from these:
 
 | File | What It Covers |
