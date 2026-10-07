@@ -50,3 +50,30 @@ All from **shadcn/ui** — styled via CSS variables:
 - Never hardcode colors — use CSS variables
 - Match Figma screenshots exactly when provided
 - Reference screenshots at `docs/design/` for pixel-accurate builds
+
+
+## Screen References (docs/design/)
+
+All Figma screens exported as PNG. Reference these when
+building UI — match layout, spacing, typography exactly.
+
+| File | Screen |
+|---|---|
+| `figma-design-system.png` | Design system (colors, type, components) |
+| `figma-home.png` | Home page |
+| `figma-discover-ideas.png` | Ideas listing |
+| `figma-myideas.png` | My Ideas (inventor dashboard) |
+| `figma-createidea.png` | Idea submission form |
+| `figma-findinvestors.png` | Investor listing |
+| `figma-casestudies.png` | Case studies listing |
+| `figma-messages.png` | Messaging inbox |
+| `figma-savedideas.png` | Saved ideas |
+| `figma-overview.png` | Admin overview/dashboard |
+| `figma-adminreviews.png` | Admin review queue |
+| `figma-settings.png` | Settings |
+| `figma-signin.png` | Sign in |
+| `figma-signup.png` | Sign up |
+
+**When building any screen:** read the matching screenshot
+and match it exactly. If a screen has no reference, use the
+design system tokens and ask before inventing a layout.
