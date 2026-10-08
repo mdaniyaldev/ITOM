@@ -1,0 +1,12 @@
+CREATE OR REPLACE FUNCTION is_admin(user_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM admin_permissions
+    WHERE admin_user_id = user_id
+      AND module IN ('inventors', 'investors', 'ideas', 'case_studies', 'reviews', 'scoring', 'messaging', 'system')
+      AND level IN ('view', 'edit', 'review', 'full')
+      AND deleted_at IS NULL
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

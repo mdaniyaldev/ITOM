@@ -1,0 +1,11 @@
+-- Admin policy: Admins can see all profiles
+CREATE POLICY "Admins can see all profiles" ON inventor_profiles
+FOR SELECT USING (
+  EXISTS (
+    SELECT 1 FROM admin_permissions
+    WHERE admin_user_id = auth.uid()
+      AND module = 'inventors'
+      AND level IN ('view', 'edit', 'review', 'full')
+      AND deleted_at IS NULL
+  )
+);

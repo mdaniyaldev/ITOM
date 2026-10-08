@@ -1,0 +1,11 @@
+```sql
+CREATE TABLE test1 (
+    id INT
+);
+```
+Some other text
+```sql
+CREATE TABLE test2 (
+    id INT
+);
+```
