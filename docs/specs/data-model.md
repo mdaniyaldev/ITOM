@@ -3,7 +3,7 @@
 **Status**: Accepted
 
 ## Context
-This specification defines the complete data model for the ITOM (Inventor/Investor Platform) application. The data model consists of 25 tables organized into 6 logical groups, designed to support the core platform functionality including inventor/investor profiles, idea submission with proof, admin review engine, scoring engine, and messaging system.
+This specification defines the complete data model for the ITOM (Inventor/Investor Platform) application. The data model consists of 26 tables organized into 6 logical groups, designed to support the core platform functionality including inventor/investor profiles, idea submission with proof, admin review engine, scoring engine, and messaging system.
 
 The design follows all architecture rules defined in AGENTS.md, including:
 - Row-Level Security (RLS) on every table from first migration
@@ -31,7 +31,7 @@ The data model must support:
 ## Decision
 ### Data Model Overview
 
-The data model consists of 25 tables organized into 6 groups:
+The data model consists of 26 tables organized into 6 groups:
 
 #### People / Access (5 tables)
 - `users` - Extends Supabase auth.users with application fields
@@ -96,7 +96,7 @@ CREATE TABLE users (
 CREATE TABLE user_roles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    role TEXT NOT NULL CHECK (role IN ('inventor', 'investor', 'case_study_author')),
+    role TEXT NOT NULL CHECK (role IN ('inventor', 'investor', 'author')),
     is_approved BOOLEAN DEFAULT FALSE,
     approved_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -145,7 +145,7 @@ CREATE TABLE score_history (
     points INTEGER NOT NULL,  -- Points awarded (can be negative for deductions)
     source TEXT NOT NULL CHECK (source IN ('AUTO', 'OVERRIDE')),  -- AUTO: system calculated, OVERRIDE: admin override
     override_by UUID REFERENCES users(id) ON DELETE SET NULL,  -- Who made the override (if source = OVERRIDE)
-    reason TEXT NOT NULL,  -- Explanation for the score change
+    reason TEXT,  -- Explanation for the score change
     created_at TIMESTAMPTZ DEFAULT NOW(),
     deleted_at TIMESTAMPTZ
 );
@@ -195,10 +195,10 @@ CREATE TABLE inventor_profiles (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     photo_url TEXT NOT NULL,  -- Mandatory upload
-    country TEXT REFERENCES master_lists(list_value) WHERE list_name = 'country',
+    country UUID REFERENCES master_lists(id),
     city TEXT,
-    field_of_work TEXT REFERENCES master_lists(list_value) WHERE list_name = 'field_of_work',
-    what_you_do TEXT REFERENCES master_lists(list_value) WHERE list_name = 'kind_of_idea',  -- Actually stores roles
+    field_of_work UUID REFERENCES master_lists(id),
+    what_you_do UUID REFERENCES master_lists(id),  -- Actually stores roles
     where_you_work_or_study TEXT,
     qualification TEXT,
     team_details JSONB,  -- For repeatable team member sections
@@ -220,14 +220,14 @@ CREATE TABLE investor_profiles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
-    type TEXT REFERENCES master_lists(list_value) WHERE list_name = 'investor_type',
+    type UUID REFERENCES master_lists(id),
     logo_url TEXT,
-    country TEXT REFERENCES master_lists(list_value) WHERE list_name = 'country',
+    country UUID REFERENCES master_lists(id),
     investment_countries TEXT[],  -- Array of country references from master_lists
-    what_you_give TEXT REFERENCES master_lists(list_value) WHERE list_name = 'contribution_type',
+    what_you_give UUID REFERENCES master_lists(id),
     looking_for TEXT,
     past_investments JSONB,  -- Structured array: [{name, year, amount, proof_url}]
-    reply_speed TEXT REFERENCES master_lists(list_value) WHERE list_name = 'reply_speed',
+    reply_speed UUID REFERENCES master_lists(id),
     contact_person TEXT,
     contact_phone TEXT NOT NULL,  -- Required but never shown in public APIs
     score INTEGER DEFAULT 0 CHECK (score BETWEEN 0 AND 100),
@@ -247,8 +247,8 @@ CREATE TABLE case_studies (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title TEXT NOT NULL,
     who_it_is_about TEXT NOT NULL CHECK (who_it_is_about IN ('myself', 'my_company', 'somebody_else_named', 'well_known_case')),
-    field TEXT REFERENCES master_lists(list_value) WHERE list_name = 'field_of_work',
-    country TEXT REFERENCES master_lists(list_value) WHERE list_name = 'country',
+    field UUID REFERENCES master_lists(id),
+    country UUID REFERENCES master_lists(id),
     main_card_description TEXT,
     box1_description TEXT,
     box2_description TEXT,
@@ -276,7 +276,7 @@ CREATE TABLE ideas (
     name TEXT NOT NULL,
     problem TEXT NOT NULL,
     how_it_works TEXT NOT NULL,
-    kind_of_idea TEXT REFERENCES master_lists(list_value) WHERE list_name = 'kind_of_idea',
+    kind_of_idea UUID REFERENCES master_lists(id),
     current_step INTEGER CHECK (current_step BETWEEN 1 AND 10),
     score INTEGER DEFAULT 0 CHECK (score BETWEEN 0 AND 100),
     badge TEXT CHECK (badge IN ('bronze', 'silver', 'gold')),
@@ -612,7 +612,8 @@ FOR SELECT USING (
   EXISTS (
     SELECT 1 FROM admin_permissions 
     WHERE admin_user_id = auth.uid() 
-      AND can_manage_inventors = true
+      AND module = 'inventors' 
+      AND level IN ('view','edit','review','full')
       AND deleted_at IS NULL
   )
 );
