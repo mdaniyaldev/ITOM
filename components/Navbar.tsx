@@ -20,14 +20,26 @@ export function Navbar({ className = "" }: NavbarProps) {
           </div>
 
           <div className="hidden md:flex md:items-center md:space-x-6">
-            <Link href="/" className="text-muted-foreground hover:text-foreground">
-              Home
-            </Link>
             <Link href="/discover-ideas" className="text-muted-foreground hover:text-foreground">
-              Discover Ideas
+              Ideas
+            </Link>
+            <Link href="/findinvestors" className="text-muted-foreground hover:text-foreground">
+              Inventors
+            </Link>
+            <Link href="/investors" className="text-muted-foreground hover:text-foreground">
+              Investors
             </Link>
             <Link href="/case-studies" className="text-muted-foreground hover:text-foreground">
-              Case Studies
+              Case studies
+            </Link>
+            <Link href="/how-it-works" className="text-muted-foreground hover:text-foreground">
+              How it works
+            </Link>
+            <Link href="/signin" className="text-muted-foreground hover:text-foreground">
+              Sign in
+            </Link>
+            <Link href="/signup" className="text-muted-foreground hover:text-foreground">
+              Sign up
             </Link>
           </div>
 
