@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { ScoreBadge } from "@/components/ScoreBadge"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 
@@ -9,6 +10,7 @@ interface InventorCardProps {
   organization?: string
   bio?: string
   avatarUrl?: string
+  score?: number
   badges?: Array<{ label: string; variant?: "default" | "secondary" | "destructive" }>
   className?: string
 }
@@ -19,6 +21,7 @@ export function InventorCard({
   organization,
   bio,
   avatarUrl,
+  score,
   badges,
   className = ""
 }: InventorCardProps) {
@@ -60,9 +63,12 @@ export function InventorCard({
         </CardContent>
       )}
 
-      {badges?.length && (
+      {(score !== undefined || !!badges?.length) && (
         <CardFooter className="mt-4 flex flex-wrap gap-2">
-          {badges.map((badge, index) => (
+          {score !== undefined && (
+            <ScoreBadge score={score} className="flex-1" />
+          )}
+          {badges?.map((badge, index) => (
             <Badge
               key={index}
               variant={badge.variant ?? "secondary"}

@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { ScoreBadge } from "@/components/ScoreBadge"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 
@@ -9,6 +10,7 @@ interface InvestorCardProps {
   organization?: string
   bio?: string
   avatarUrl?: string
+  score?: number
   investorType?: string
   className?: string
 }
@@ -19,6 +21,7 @@ export function InvestorCard({
   organization,
   bio,
   avatarUrl,
+  score,
   investorType,
   className = ""
 }: InvestorCardProps) {
@@ -60,11 +63,16 @@ export function InvestorCard({
         </CardContent>
       )}
 
-      {investorType && (
-        <CardFooter className="mt-4">
-          <Badge variant="secondary" className="w-fit">
-            {investorType}
-          </Badge>
+      {(score !== undefined || investorType) && (
+        <CardFooter className="mt-4 flex flex-wrap gap-2">
+          {score !== undefined && (
+            <ScoreBadge score={score} className="w-fit" />
+          )}
+          {investorType && (
+            <Badge variant="secondary" className="w-fit">
+              {investorType}
+            </Badge>
+          )}
         </CardFooter>
       )}
     </Card>

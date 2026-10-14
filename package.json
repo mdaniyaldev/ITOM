@@ -5,7 +5,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "vitest"
+    "test": "vitest",
+    "clean": "rmdir /s /q .next"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",
